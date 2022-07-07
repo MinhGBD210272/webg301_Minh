@@ -10,11 +10,13 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $post = new Post();
-        $post->setTitle('title');
-        $post->setContent('content');
-        $post->setCreatedAt(new \DateTime());
-        $manager->persist($post);
+        for ($i=1; $i<=20; $i++) {
+            $post = new Post();
+            $post->setTitle('title' . $i);
+            $post->setContent('content' . $i);
+            $post->setCreatedAt(new \DateTime());
+            $manager->persist($post);
+        }
         $manager->flush();
     }
 }
