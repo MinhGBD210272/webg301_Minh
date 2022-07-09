@@ -22,6 +22,11 @@ class Category
      */
     private $title;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Post::class, mappedBy="category")
+     */
+    private $posts; //1 post only have 1 category
+
     public function getId(): ?int
     {
         return $this->id;
@@ -41,4 +46,31 @@ class Category
     {
         $this->title = $title;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPosts()
+    {
+        return $this->posts;
+    }
+
+    public function addPost(Post $post){
+        if(!$this->posts->contains($post)){
+            $this->posts[] = $post;
+            $post->setCategory($this);
+        }
+        return $this;
+    }
+
+    public function removePost(Post $post){
+        if($this->posts->contains($post)){
+            $this->posts->removeElement($post);
+            if($post->getCategory() === $this){
+                $post->setCategory(null);
+            }
+        }
+        return $this;
+    }
+
 }
