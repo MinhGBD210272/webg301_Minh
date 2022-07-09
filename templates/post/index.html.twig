@@ -21,7 +21,7 @@
                 <h2>{{ post.title }}</h2>
                 <div class="metadata">
                     {{ post.createdAt | date('Y-m-d') }} at {{ post.createdAt | date('H:i') }}  by Minh
-                    <span class="badge bg-success">Success</span>
+                    <span class="badge bg-success">{{ post.category.title }}</span>
                     5 comments
                 </div>
                 <div class="content">
@@ -32,5 +32,7 @@
             </article>
         </section>
     {% endfor %}
-
+    <div class="navigation mt-3">
+        {{ knp_pagination_render(posts) }}
+    </div>
 {% endblock %}
