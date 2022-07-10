@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
+
 class PostController extends AbstractController
 {
     /**
@@ -35,19 +36,48 @@ class PostController extends AbstractController
     public function create(Request $request){
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $post->setCreatedAt(new \DateTime());
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($post);
+            $entityManager->flush();
 
-        return $this->render('post/new.html.twig');
+            $this->redirectToRoute('app_post');
+
+        }
+
+        return $this->render('post/new.html.twig', [
+            'form'=> $form->createView()
+        ]);
     }
 
     /**
      * @Route("/post/{id}" , name="post_show")
      */
-    public function show(Request $request, PostRepository $postRepository) {
+    public function show(Request $request, PostRepository $postRepository){
         $postId = $request->attributes->get('id');
         $post = $postRepository->find($postId);
 
         return $this->render('post/show.html.twig' , [
             'post' => $post
             ]);
+    }
+    /**
+     * @Route ("/post/{id}/edit", name="post_edit")
+     */
+    public function edit(Post $post, Request $request){
+        $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($post);
+            $entityManager->flush();
+            return $this->redirectToRoute('post_show', ['id'=> $post->getID()]);
+        }
+        return $this->render('/post/edit.html.twig', [
+            'post' => $post,
+            'editForm' => $form->createView()
+        ]);
     }
 }
