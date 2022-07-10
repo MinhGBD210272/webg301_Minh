@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Post;
+use App\Form\CommentType;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -63,8 +65,25 @@ class PostController extends AbstractController
         $postId = $request->attributes->get('id');
         $post = $postRepository->find($postId);
 
+        $comment = new Comment();
+        $commentForm = $this->createForm(CommentType::class, $comment);
+        $commentForm->handleRequest($request);
+        if($commentForm->isSubmitted() && $commentForm->isValid()){
+            $comment->setCreatedAt(new \DateTimeImmutable());
+            $comment->setPost($post);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($comment);
+            $entityManager->flush();
+            $this->addFlash(
+                'success',
+                'Added comment'
+            );
+            return $this->redirectToRoute('post_show', ['id'=> $post->getID()]);
+        }
+
         return $this->render('post/show.html.twig' , [
-            'post' => $post
+            'post' => $post,
+            'commentForm' => $commentForm->createView()
             ]);
     }
     /**
@@ -79,7 +98,7 @@ class PostController extends AbstractController
             $entityManager->flush();
             $this->addFlash(
                 'success',
-                'Added a post'
+                'Edited a post'
             );
             return $this->redirectToRoute('post_show', ['id'=> $post->getID()]);
         }

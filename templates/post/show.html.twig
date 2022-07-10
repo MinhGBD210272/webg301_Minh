@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-
+{% form_theme commentForm 'bootstrap_4_layout.html.twig' %}
 {% block title %}Post Show{% endblock %}
 
 {% block body %}
@@ -18,7 +18,7 @@
 
     {% for message in app.flashes('success') %}
         <div class="alert alert-success mt-3 text-center">
-            {{ messeage }}
+            {{ message }}
         </div>
     {% endfor %}
 
@@ -40,12 +40,23 @@
 
     <h2 class="mt-3"> 5 Comments</h2>
     <section class="mt-3">
+        {% for comment in post.comments %}
         <div class="card-header">
-            Minh <small>2022-10-10 at 11:23</small>
+            {{ comment.author }} <small>{{ comment.createdAt | date('Y-m-d') }} at {{ comment.createdAt | date('H:i') }}</small>
         </div>
         <div class="card-body">
-            <p>weqwewqeeqqweqwe</p>
+            <p>{{ comment.content }}</p>
             <a href="#">read more</a>
         </div>
+        {% endfor %}
     </section>
+
+    <hr>
+    <h2>Add Comment</h2>
+    {{ form_start(commentForm) }}
+    {{ form_widget(commentForm) }}
+    <button class="btn btn-success mt-3">Add a comment</button>
+    {{ form_end(commentForm) }}
+
+
 {% endblock %}
