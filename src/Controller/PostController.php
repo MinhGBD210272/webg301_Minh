@@ -42,6 +42,10 @@ class PostController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($post);
             $entityManager->flush();
+            $this->addFlash(
+                'success',
+                'Added a post'
+            );
 
             $this->redirectToRoute('app_post');
 
@@ -73,6 +77,10 @@ class PostController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($post);
             $entityManager->flush();
+            $this->addFlash(
+                'success',
+                'Added a post'
+            );
             return $this->redirectToRoute('post_show', ['id'=> $post->getID()]);
         }
         return $this->render('/post/edit.html.twig', [
